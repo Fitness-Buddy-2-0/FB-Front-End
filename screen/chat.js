@@ -1,8 +1,19 @@
 import React from 'react';
 import { GiftedChat } from 'react-native-gifted-chat'; // 0.3.0
 import { connect } from 'react-redux'
-import firebaseSvc from '../FirebaseSvc';
+import {firebaseSvc} from '../FirebaseSvc';
+import {db} from '../FirebaseSvc';
 
+db.collection('chat').add({
+  name: 'mikyla',
+  message: 'Hello world!'
+})
+.then(function (docRef) {
+  console.log(`Document written with ID: ${docRef.id}`);
+})
+.catch(function (error) {
+  console.error(`Error adding document: ${error}`);
+});
 
 class Chat extends React.Component{
 

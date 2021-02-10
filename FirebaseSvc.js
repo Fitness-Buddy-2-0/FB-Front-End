@@ -3,12 +3,13 @@ class FirebaseSvc {
   constructor() {
     if (!firebase.apps.length) { //avoid re-initializing
       firebase.initializeApp({
-        apiKey: "AIzaSyAor4JPitQgMqNW0ys87T-vOv6lYNUNkNg",
-        authDomain: "fitness-buddy-57f3f.firebaseapp.com",
-        databaseURL: "https://fitness-buddy-57f3f.firebaseio.com",
-        projectId: "fitness-buddy-57f3f",
-        storageBucket: "fitness-buddy-57f3f.appspot.com",
-        messagingSenderId: "225211913391",
+        apiKey: "AIzaSyCkX68YCjKbSeScGkBVAKNXyEawvF0VIDU",
+        authDomain: "fitness-buddy-20.firebaseapp.com",
+        projectId: "fitness-buddy-20",
+        storageBucket: "fitness-buddy-20.appspot.com",
+        messagingSenderId: "819456950540",
+        appId: "1:819456950540:web:22117c8b1016974bc68929",
+        measurementId: "G-4NH76FN9XT"
       });
      }
   }
@@ -69,5 +70,5 @@ class FirebaseSvc {
   }
 
 }
-const firebaseSvc = new FirebaseSvc();
-export default firebaseSvc;
+export const firebaseSvc = new FirebaseSvc();
+export var db = firebase.firestore()
