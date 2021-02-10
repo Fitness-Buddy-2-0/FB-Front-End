@@ -1,10 +1,13 @@
 import React, { useState } from 'react';
 import { Text, TextInput, View, TouchableOpacity, Alert, Keyboard } from 'react-native';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
-import firebaseSDK from '../FirebaseSvc';
+// import firebaseSDK from '../FirebaseSvc';
 import { registerNewUser } from '../store/user';
+import Firebase from '../FirebaseSvc'
 import { connect } from 'react-redux';
 import styles from './styles';
+// import auth from '@react-native-firebase/auth';
+
 
 function SignUp(props) {
   const [email, setEmail] = useState('');
@@ -23,25 +26,31 @@ function SignUp(props) {
     //   Alert.alert("Passwords don't match. Please try again!");
     //   return;
     // }
-    firebaseSDK
-      .auth()
-      .createUserWithEmailAndPassword(email, password)
-      .then(async () => {
-        let token = await firebaseSDK.auth().currentUser.getIdToken();
-        const body = {
-          token,
-          // gender,
-          userName,
-          email
-        };
-        console.log('body in signup', body)
-        await props.gotUser(body);
-        // props.navigation.navigate('LogIn');
-      })
-      .catch(() => {
-        Alert.alert('Sorry, there was a problem creating an account. Please try again!');
-      });
-  };
+  //   firebaseSDK
+  //     .auth()
+  //     .createUserWithEmailAndPassword(email, password)
+  //     .then(async () => {
+  //       let token = await firebaseSDK.auth().currentUser.getIdToken();
+  //       const body = {
+  //         token,
+  //         // gender,
+  //         userName,
+  //         email
+  //       };
+  //       console.log('body in signup', body)
+  //       await props.gotUser(body);
+  //       // props.navigation.navigate('LogIn');
+  //     })
+  //     .catch(() => {
+  //       Alert.alert('Sorry, there was a problem creating an account. Please try again!');
+  //     });
+  // };
+  Firebase.auth()
+            .createUserWithEmailAndPassword(email, password)
+            .then(() => props.navigation.navigate('LogIn'))
+            .catch(error => console.log(error))
+
+}
 
   return (
 
