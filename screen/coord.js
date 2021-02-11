@@ -2,7 +2,7 @@ import { StatusBar } from 'expo-status-bar';
 import React, { Component } from 'react';
 import { Alert, StyleSheet, Text, View, TouchableOpacity, Button } from 'react-native';
 import { connect } from 'react-redux'
-import { usersNearBy } from '../store/users'
+import { allUsers } from '../store/users'
 import store from '../store';
 import styles from './styles';
 
@@ -16,7 +16,7 @@ class CoordDC extends Component {
       longitude: null,
       store: storeState
     };
-    console.log('props', this.props)
+    // console.log('props', this.props)
     this._isMounted = false;
     this.findCoordinates = this.findCoordinates.bind(this)
     this.updateLocation = this.updateLocation.bind(this)
@@ -31,18 +31,18 @@ class CoordDC extends Component {
   findCoordinates = () => {
     navigator.geolocation.getCurrentPosition(
       position => {
-        console.log('position: ', position)
+        // console.log('position: ', position)
 
         this.setState({
           latitude: position.coords.latitude,
           longitude: position.coords.longitude,
         })
-        console.log('is the state updated? in find coordinates', this.state)
+        // console.log('is the state updated? in find coordinates', this.state)
       },
       error => Alert.alert(error.message),
       { enableHighAccuracy: true, timeout: 20000, maximumAge: 1000 }
     );
-    console.log('I am at the end of find coordnates')
+    // console.log('I am at the end of find coordnates')
   };
   updateLocation = async () => {
     try {
@@ -56,12 +56,12 @@ class CoordDC extends Component {
           ]
         }
       }
-      console.log('coord is', coord)
+      // console.log('coord is', coord)
 
       // console.log('state', state)
       // console.log('props', this.props)
       // console.log('singleuser', this.props.singleUser)
-      this.props.updateLocthunk(this.state.store.singleUser.user.uid, coord)
+      this.props.updateLocthunk()
     } catch (err) {
       console.log(err)
     }
@@ -69,7 +69,10 @@ class CoordDC extends Component {
   }
   render() {
     const users = this.props.users || []
-    console.log('mapstate users', this.props.users)
+    // console.log('mapstate users', this.props.users)
+    if(!this.props.users){
+
+    }
     return (
       <View style={page.container}>
         <TouchableOpacity style={page.refresh} onPress={this.updateLocation} >
@@ -85,9 +88,9 @@ class CoordDC extends Component {
               return (
                 <View key={user.uid} style={page.nearby}>
                   <Text style={page.person}>{user.userName}</Text>
-                  <Text style={page.person}>{user.gender}</Text>
+                  {/* <Text style={page.person}>{user.gender}</Text>
                   <Text style={page.person}> coordinates: [{user.location.coordinates[0].toFixed(2)}, {user.location.coordinates[1].toFixed(2)}]
-                  </Text>
+                  </Text> */}
                   <TouchableOpacity style={page.button} onPress={() => { this.props.navigation.navigate('Chat') }} >
                     <View>
                       <Text style={page.buttonTitle}>Chat</Text>
@@ -169,7 +172,7 @@ const mapState = state => {
 }
 const mapDispatch = dispatch => {
   return {
-    updateLocthunk: (userId, coord) => dispatch(usersNearBy(userId, coord))
+    updateLocthunk: () => dispatch(allUsers())
   }
 }
 

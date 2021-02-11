@@ -2,10 +2,11 @@ import React, { useState } from 'react';
 import { Text, TextInput, View, TouchableOpacity, Alert, Keyboard } from 'react-native';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 // import firebaseSDK from '../FirebaseSvc';
-import { registerNewUser } from '../store/user';
+// import { registerNewUser } from '../store/user';
 import Firebase from '../FirebaseSvc'
 import { connect } from 'react-redux';
 import styles from './styles';
+import {db} from '../FirebaseSvc'
 // import auth from '@react-native-firebase/auth';
 
 
@@ -20,37 +21,25 @@ function SignUp(props) {
     props.navigation.navigate('LogIn');
   };
 
-  const onRegisterPress = () => {
-    Keyboard.dismiss();
-    // if (password !== confirmPassword) {
-    //   Alert.alert("Passwords don't match. Please try again!");
-    //   return;
-    // }
-  //   firebaseSDK
-  //     .auth()
-  //     .createUserWithEmailAndPassword(email, password)
-  //     .then(async () => {
-  //       let token = await firebaseSDK.auth().currentUser.getIdToken();
-  //       const body = {
-  //         token,
-  //         // gender,
-  //         userName,
-  //         email
-  //       };
-  //       console.log('body in signup', body)
-  //       await props.gotUser(body);
-  //       // props.navigation.navigate('LogIn');
-  //     })
-  //     .catch(() => {
-  //       Alert.alert('Sorry, there was a problem creating an account. Please try again!');
-  //     });
-  // };
-  Firebase.auth()
-            .createUserWithEmailAndPassword(email, password)
-            .then(() => props.navigation.navigate('LogIn'))
-            .catch(error => console.log(error))
-
-}
+  const onRegisterPress = async () => {
+    try{
+      Keyboard.dismiss();
+      const request = await Firebase.auth().createUserWithEmailAndPassword(email, password)
+      if (request.user.uid) {
+        const user = {
+          uid: request.user.uid,
+          email: email,
+          userName: userName
+        }
+        db.collection('users')
+          .doc(request.user.uid)
+          .set(user)
+      props.navigation.navigate('LogIn');
+        }
+    }catch(error){
+      Alert.alert('Sorry, there was a problem creating an account. Please try again!');
+    }
+  }
 
   return (
 
@@ -115,12 +104,12 @@ function SignUp(props) {
   );
 }
 
-const mapState = state => ({
-  user: state.singleUser
-});
+// const mapState = state => ({
+//   user: state.singleUser
+// });
 
-const mapDispatch = dispatch => ({
-  gotUser: user => dispatch(registerNewUser(user))
-});
+// const mapDispatch = dispatch => ({
+//   gotUser: user => dispatch(registerNewUser(user))
+// });
 
-export default connect(mapState, mapDispatch)(SignUp);
+export default SignUp;

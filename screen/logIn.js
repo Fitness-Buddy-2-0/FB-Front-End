@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { Text, TextInput, View, Alert, Keyboard, TouchableOpacity } from 'react-native';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
-import firebaseSDK from '../FirebaseSvc';
-import { getUser } from '../store/user';
+import Firebase from '../FirebaseSvc';
+// import { getUser } from '../store/user';
 import { connect } from 'react-redux';
 import styles from './styles';
 
@@ -17,12 +17,12 @@ function LoginScreen(props) {
   const onLoginPress = () => {
 
     Keyboard.dismiss();
-    firebaseSDK
+    Firebase
       .auth()
       .signInWithEmailAndPassword(email, password)
       .then(async () => {
-        console.log('email', email)
-        await props.gotUser();
+        // console.log('email', email)
+        // await props.gotUser();
         props.navigation.navigate('Welcome');
       })
 
@@ -74,12 +74,12 @@ function LoginScreen(props) {
   );
 }
 
-const mapState = state => ({
-  user: state.singleUser
-});
+// const mapState = state => ({
+//   user: state.singleUser
+// });
 
-const mapDispatch = dispatch => ({
-  gotUser: () => dispatch(getUser())
-});
+// const mapDispatch = dispatch => ({
+//   gotUser: () => dispatch(getUser())
+// });
 
-export default connect(mapState, mapDispatch)(LoginScreen);
+export default LoginScreen;

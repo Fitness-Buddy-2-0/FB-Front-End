@@ -1,7 +1,7 @@
 import { Alert, View, Text, Button, StyleSheet, input,TouchableOpacity,Image } from 'react-native';
 import React from 'react';
 import { connect } from 'react-redux'
-import { removeUser } from '../store/user'
+// import { removeUser } from '../store/user'
 import firebaseSvc from '../FirebaseSvc';
 import styles from './styles';
 
@@ -45,23 +45,23 @@ function WelcomePage(props) {
   );
 }
 
-const mapState = state => {
-  return {
-    singleUser: state.singleUser.user,
-    users: state.users
-  }
-}
+// const mapState = state => {
+//   return {
+//     // singleUser: state.singleUser.user,
+//     users: state.users
+//   }
+// }
 // const mapDispatch = dispatch => {
 //   return {
 
 //   }
 // }
 
-const mapDispatch = dispatch => {
-  return {
-    logOutUser: () => dispatch(removeUser())
-  }
-}
+// const mapDispatch = dispatch => {
+//   return {
+//     logOutUser: () => dispatch(removeUser())
+//   }
+// }
 
 const page = StyleSheet.create({
   headline: {
@@ -85,4 +85,4 @@ const page = StyleSheet.create({
   },
 })
 
-export default connect(mapState, mapDispatch)(WelcomePage)
+export default WelcomePage
