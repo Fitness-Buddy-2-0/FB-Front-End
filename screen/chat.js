@@ -4,16 +4,7 @@ import { connect } from 'react-redux'
 import { firebaseSvc } from '../FirebaseSvc';
 import { db } from '../FirebaseSvc'
 import Firebase from '../FirebaseSvc'
-db.collection('chat').add({
-  name: 'mikyla',
-  message: 'Hello world!'
-})
-  .then(function (docRef) {
-    console.log(`Document written with ID: ${docRef.id}`);
-  })
-  .catch(function (error) {
-    console.error(`Error adding document: ${error}`);
-  });
+
 
 class Chat extends React.Component {
 
@@ -24,7 +15,9 @@ class Chat extends React.Component {
       email: '',
       uid: '',
       otherUser_uid: '',
+      chats: []
     }
+    this.getChat = this.getChat.bind(this)
   }
   static navigationOptions = ({ navigation }) => ({
     title: (navigation.state.params || {}).name || 'Chat!',
@@ -50,29 +43,43 @@ class Chat extends React.Component {
         uid: user.uid
       })
     }
-
-
-  }
-  render() {
     const { otherInChat } = this.props.route.params
     this.setState({
       otherUser_uid: otherInChat
     })
-    docRef.get().then((doc) => {
-      if (doc.exists) {
-        this.setState({
-          name: doc.data().userName
-        })
-      }
-    })
-    return (
-      <div>{otherInChat}</div>
+  }
+  getChat() {
+    // let docRef = db.collection("messages").where("sender", "==", this.state.uid)
+    // console.log('docRef', docRef)
+    // docRef.get()
+    //   .then((doc) => {
+    //     console.log('doc ', doc)
+    //     doc.forEach((singledoc) => {
+    //       this.setState({
+    //         chats: [...this.state.chats, singledoc.data()]
+    //       })
+    //     })
+    //   }).catch((error) => {
+    //     console.log("Error getting documents: ", error);
+    //   });
+  }
+  render() {
 
-      // <GiftedChat
-      //   messages={this.state.messages}
-      //   onSend={firebaseSvc.send}
-      //   user={this.props.singleUser}
-      // />
+
+    this.getChat()
+    console.log(this.state)
+    return (
+      <div>
+        {this.state.chats.map((chat, index) => {
+          return (
+            <div key={index}>
+              <p> receiver: {chat.receiver}</p>
+              <p> message: {chat.message}</p>
+              <p> sender: {chat.sender}</p>
+            </div>
+          )
+        })}
+      </div>
     );
   }
 
