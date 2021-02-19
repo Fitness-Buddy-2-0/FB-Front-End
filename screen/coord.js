@@ -70,7 +70,7 @@ class CoordDC extends Component {
   render() {
     const users = this.props.users || []
     // console.log('mapstate users', this.props.users)
-    if(!this.props.users){
+    if (!this.props.users) {
 
     }
     return (
@@ -91,7 +91,11 @@ class CoordDC extends Component {
                   {/* <Text style={page.person}>{user.gender}</Text>
                   <Text style={page.person}> coordinates: [{user.location.coordinates[0].toFixed(2)}, {user.location.coordinates[1].toFixed(2)}]
                   </Text> */}
-                  <TouchableOpacity style={page.button} onPress={() => { this.props.navigation.navigate('Chat') }} >
+                  <TouchableOpacity style={page.button} onPress={() => {
+                    this.props.navigation.navigate('Chat', {
+                      otherInChat: user.uid
+                    })
+                  }} >
                     <View>
                       <Text style={page.buttonTitle}>Chat</Text>
                     </View>
@@ -158,8 +162,8 @@ const page = StyleSheet.create({
     fontWeight: 'bold',
     fontSize: 16,
   },
-  pad:{
-    borderRadius:50,
+  pad: {
+    borderRadius: 50,
     marginBottom: 100,
   }
 });
