@@ -1,4 +1,5 @@
 import React from 'react';
+import {View, Text} from 'react-native'
 import { GiftedChat } from 'react-native-gifted-chat'; // 0.3.0
 import { connect } from 'react-redux'
 import { firebaseSvc } from '../FirebaseSvc';
@@ -17,7 +18,6 @@ class Chat extends React.Component {
       otherUser_uid: '',
       chats: []
     }
-    this.getChat = this.getChat.bind(this)
   }
   static navigationOptions = ({ navigation }) => ({
     title: (navigation.state.params || {}).name || 'Chat!',
@@ -30,6 +30,37 @@ class Chat extends React.Component {
     let user = Firebase.auth().currentUser;
     let userUid = user.uid
     let docRef = db.collection("users").doc(userUid)
+    const { otherInChat } = this.props.route.params
+
+//if userUid < otherInChat, then userUid is p1, otherwise p2, for roomId(concat of p1 and p2)
+    let p1, p2
+    if(userUid < otherInChat){
+      p1 = userUid
+      p2 = otherInChat
+    }
+    else{
+      p1 = otherInChat
+      p2 = userUid
+    }
+//create or fetch room data from firestore
+    let roomRef = db.collection("room").doc(p1+p2)
+    roomRef.get().then((doc)=>{
+      console.log('doc: ',doc)
+      if (doc.exists){
+        console.log('exists!', doc.data())
+      }
+      else{
+        console.log('here')
+        const room = {
+          roomId: p1+p2,
+          p1: p1,
+          p2: p2
+        }
+        db.collection('room').doc(p1+p2).set(room)
+      }
+    })
+
+
     docRef.get().then((doc) => {
       if (doc.exists) {
         this.setState({
@@ -43,43 +74,37 @@ class Chat extends React.Component {
         uid: user.uid
       })
     }
-    const { otherInChat } = this.props.route.params
     this.setState({
       otherUser_uid: otherInChat
     })
+
+    let docRef2 = db.collection("messages").where("sender", "==", userUid)
+    docRef2.get()
+      .then((doc) => {
+        doc.forEach((singledoc) => {
+          this.setState({
+            chats: [...this.state.chats, singledoc.data()]
+          })
+        })
+      }).catch((error) => {
+        console.log("Error getting documents: ", error);
+      })
   }
-  getChat() {
-    // let docRef = db.collection("messages").where("sender", "==", this.state.uid)
-    // console.log('docRef', docRef)
-    // docRef.get()
-    //   .then((doc) => {
-    //     console.log('doc ', doc)
-    //     doc.forEach((singledoc) => {
-    //       this.setState({
-    //         chats: [...this.state.chats, singledoc.data()]
-    //       })
-    //     })
-    //   }).catch((error) => {
-    //     console.log("Error getting documents: ", error);
-    //   });
-  }
+
   render() {
-
-
-    this.getChat()
-    console.log(this.state)
+    console.log('chat state here: ',this.state)
     return (
-      <div>
+      <View>
         {this.state.chats.map((chat, index) => {
           return (
-            <div key={index}>
-              <p> receiver: {chat.receiver}</p>
-              <p> message: {chat.message}</p>
-              <p> sender: {chat.sender}</p>
-            </div>
+            <View key={index}>
+              <Text> receiver: {chat.receiver}</Text>
+              <Text> message: {chat.message}</Text>
+              <Text> sender: {chat.sender}</Text>
+            </View>
           )
         })}
-      </div>
+      </View>
     );
   }
 
