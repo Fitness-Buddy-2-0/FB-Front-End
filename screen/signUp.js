@@ -1,8 +1,6 @@
 import React, { useState } from 'react';
 import { Text, TextInput, View, TouchableOpacity, Alert, Keyboard } from 'react-native';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
-// import firebaseSDK from '../FirebaseSvc';
-// import { registerNewUser } from '../store/user';
 import Firebase from '../FirebaseSvc'
 import { connect } from 'react-redux';
 import styles from './styles';

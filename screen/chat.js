@@ -1,10 +1,11 @@
 import React from 'react';
-import {View, Text} from 'react-native'
+import {View, Text, TextInput, TouchableOpacity} from 'react-native'
 import { GiftedChat } from 'react-native-gifted-chat'; // 0.3.0
 import { connect } from 'react-redux'
-import { firebaseSvc } from '../FirebaseSvc';
 import { db } from '../FirebaseSvc'
+import styles from './styles';
 import Firebase from '../FirebaseSvc'
+import firebase from 'firebase'
 
 
 class Chat extends React.Component {
@@ -16,8 +17,11 @@ class Chat extends React.Component {
       email: '',
       uid: '',
       otherUser_uid: '',
-      chats: []
+      chats: [],
+      roomId: '',
+      value: ''
     }
+    this.onSendPress = this.onSendPress.bind(this)
   }
   static navigationOptions = ({ navigation }) => ({
     title: (navigation.state.params || {}).name || 'Chat!',
@@ -48,6 +52,8 @@ class Chat extends React.Component {
       console.log('doc: ',doc)
       if (doc.exists){
         console.log('exists!', doc.data())
+        this.setState({roomId: doc.data().roomId})
+
       }
       else{
         console.log('here')
@@ -57,6 +63,7 @@ class Chat extends React.Component {
           p2: p2
         }
         db.collection('room').doc(p1+p2).set(room)
+        this.setState({roomId: p1+p2})
       }
     })
 
@@ -78,17 +85,26 @@ class Chat extends React.Component {
       otherUser_uid: otherInChat
     })
 
-    let docRef2 = db.collection("messages").where("sender", "==", userUid)
-    docRef2.get()
-      .then((doc) => {
-        doc.forEach((singledoc) => {
-          this.setState({
-            chats: [...this.state.chats, singledoc.data()]
+      db.collection("messages").where("roomId", "==", p1+p2).orderBy('timestamp', 'asc').onSnapshot((snapshot) => {
+          this.setState({chats:[]})
+          snapshot.forEach((singledoc) => {
+              this.setState({
+                chats: [...this.state.chats, singledoc.data()]
+              })
           })
         })
-      }).catch((error) => {
-        console.log("Error getting documents: ", error);
-      })
+  }
+
+
+ onSendPress(){
+    db.collection('messages')
+    .add({
+      roomId: this.state.roomId,
+      sender: this.state.uid,
+      message: this.state.value,
+      timestamp:  firebase.firestore.Timestamp.fromMillis(Date.now())
+    })
+    this.setState({value:''})
   }
 
   render() {
@@ -98,26 +114,22 @@ class Chat extends React.Component {
         {this.state.chats.map((chat, index) => {
           return (
             <View key={index}>
-              <Text> receiver: {chat.receiver}</Text>
+              <Text> receiver: </Text>
               <Text> message: {chat.message}</Text>
               <Text> sender: {chat.sender}</Text>
             </View>
           )
         })}
+        <TextInput  style={styles.input} onChangeText={(text) => this.setState({ value: text })} value={this.state.value}/>
+        <TouchableOpacity style={styles.button} onPress={() => this.onSendPress()} >
+          <View>
+            <Text >Send</Text>
+          </View>
+        </TouchableOpacity>
       </View>
     );
   }
 
-  // componentDidMount() {
-  //   firebaseSvc.refOn(message =>
-  //     this.setState(previousState => ({
-  //       messages: GiftedChat.append(previousState.messages, message),
-  //     }))
-  //   );
-  // }
-  // componentWillUnmount() {
-  //   firebaseSvc.refOff();
-  // }
 }
 
 const mapState = state => {
