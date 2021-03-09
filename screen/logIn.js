@@ -23,7 +23,7 @@ function LoginScreen(props) {
       .then(async () => {
         // console.log('email', email)
         // await props.gotUser();
-        props.navigation.navigate('Welcome');
+        props.navigation.navigate('Welcome')
       })
 
       .catch((error) => {
@@ -62,7 +62,7 @@ function LoginScreen(props) {
         </TouchableOpacity>
 
         <View style={styles.footerView} >
-          <Text  style={styles.footerText} >
+          <Text style={styles.footerText} >
             Don't have an account?{' '}
             <Text onPress={onFooterLinkPress} style={styles.footerLink}>
               Sign up

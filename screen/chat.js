@@ -6,7 +6,7 @@ import { db } from '../FirebaseSvc'
 import styles from './styles';
 import Firebase from '../FirebaseSvc'
 import firebase from 'firebase'
-
+import { gotMessages } from '../store/message'
 
 class Chat extends React.Component {
 
@@ -17,11 +17,11 @@ class Chat extends React.Component {
       email: '',
       uid: '',
       otherUser_uid: '',
-      chats: [],
       roomId: '',
       value: ''
     }
     this.onSendPress = this.onSendPress.bind(this)
+    this.createOrFindRoom = this.createOrFindRoom.bind(this)
   }
   static navigationOptions = ({ navigation }) => ({
     title: (navigation.state.params || {}).name || 'Chat!',
@@ -30,22 +30,7 @@ class Chat extends React.Component {
   state = {
     messages: [],
   };
-  componentDidMount() {
-    let user = Firebase.auth().currentUser;
-    let userUid = user.uid
-    let docRef = db.collection("users").doc(userUid)
-    const { otherInChat } = this.props.route.params
-
-    //if userUid < otherInChat, then userUid is p1, otherwise p2, for roomId(concat of p1 and p2)
-    let p1, p2
-    if (userUid < otherInChat) {
-      p1 = userUid
-      p2 = otherInChat
-    }
-    else {
-      p1 = otherInChat
-      p2 = userUid
-    }
+  createOrFindRoom() {
     //create or fetch room data from firestore
     let roomRef = db.collection("room").doc(p1 + p2)
     roomRef.get().then((doc) => {
@@ -66,6 +51,23 @@ class Chat extends React.Component {
         this.setState({ roomId: p1 + p2 })
       }
     })
+  }
+  componentDidMount() {
+    let user = Firebase.auth().currentUser;
+    let userUid = user.uid
+    let docRef = db.collection("users").doc(userUid)
+    const { otherInChat } = this.props.route.params
+
+    //if userUid < otherInChat, then userUid is p1, otherwise p2, for roomId(concat of p1 and p2)
+    let p1, p2
+    if (userUid < otherInChat) {
+      p1 = userUid
+      p2 = otherInChat
+    }
+    else {
+      p1 = otherInChat
+      p2 = userUid
+    }
 
 
 
@@ -85,16 +87,7 @@ class Chat extends React.Component {
     this.setState({
       otherUser_uid: otherInChat
     })
-
-    db.collection("messages").where("roomId", "==", p1 + p2).orderBy('timestamp', 'asc').onSnapshot((snapshot) => {
-      this.setState({ chats: [] })
-      snapshot.forEach((singledoc) => {
-        this.setState({
-          chats: [...this.state.chats, singledoc.data()]
-        })
-      })
-    })
-
+    this.props.gotMessages(p1 + p2)
   }
 
   componentWillUnmount() {
@@ -116,7 +109,7 @@ class Chat extends React.Component {
     console.log('chat state here: ', this.state)
     return (
       <View>
-        {this.state.chats.map((chat, index) => {
+        {this.props.messages.map((chat, index) => {
           return (
             <View key={index} style={chat.sender == this.state.uid ? styles.messagessender : styles.messagesreceiver}>
               <Text style={chat.sender == this.state.uid ? styles.messageS : styles.messageR}> {chat.message}</Text>
@@ -138,12 +131,14 @@ class Chat extends React.Component {
 const mapState = state => {
   return {
     // singleUser: state.singleUser.user,
-    users: state.users
+    users: state.users,
+    messages: state.messages
   }
 }
 const mapDispatch = dispatch => {
   return {
-    updateLocthunk: (userId, coord) => dispatch(usersNearBy(userId, coord))
+    updateLocthunk: (userId, coord) => dispatch(usersNearBy(userId, coord)),
+    gotMessages: (id) => dispatch(gotMessages(id))
   }
 }
 

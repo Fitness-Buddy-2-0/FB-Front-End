@@ -4,10 +4,11 @@ import thunkMiddleware from 'redux-thunk'
 import { composeWithDevTools } from 'redux-devtools-extension'
 // import user from './user'
 import users from './users'
-
+import messages from './message'
 const reducer = combineReducers({
   // singleUser: user,
-  users: users
+  users,
+  messages
 })
 
 const middleware = composeWithDevTools(
