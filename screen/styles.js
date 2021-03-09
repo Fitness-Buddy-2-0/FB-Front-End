@@ -22,7 +22,7 @@ export default StyleSheet.create({
 		marginRight: 30,
 		marginTop: 20,
 		height: 48,
-		padding:10,
+		padding: 10,
 		borderRadius: 5,
 		alignItems: 'center',
 		justifyContent: 'center',
@@ -64,4 +64,20 @@ export default StyleSheet.create({
 		fontWeight: '500',
 		marginBottom: 20
 	},
+	"messagesreceiver": {
+		"padding": 10,
+		"margin": 10,
+		"backgroundColor": "#ffffff"
+	},
+	"messagessender": {
+		"padding": 10,
+		"margin": 10,
+		"backgroundColor": "#b4d0e2",
+	},
+	messageR: {
+		"textAlign": "left",
+	},
+	messageS: {
+		"textAlign": "right"
+	}
 });
