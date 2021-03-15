@@ -103,7 +103,7 @@ class Chat extends React.Component {
 
   render() {
     console.log('chat state here: ', this.state)
-    console.log('what are the messages, ', this.props.messages)
+    console.log('what are the messages, ', this.props)
     return (
       <View>
         {this.props.messages.map((chat, index) => {
@@ -127,9 +127,8 @@ class Chat extends React.Component {
 
 const mapState = state => {
   return {
-    // singleUser: state.singleUser.user,
+    messages: state.messages,
     users: state.users,
-    messages: state.messages
   }
 }
 const mapDispatch = dispatch => {

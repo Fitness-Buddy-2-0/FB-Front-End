@@ -7,7 +7,6 @@ const getMessage = (messages) => ({ type: GET_MESSAGE, messages })
 // retrive message from firebase DB to store in redux store.
 export const gotMessages = (id) => dispatch => {
   try {
-
     db.collection("messages").where("roomId", "==", id).orderBy('timestamp', 'asc').onSnapshot((snapshot) => {
       let message = []
       snapshot.forEach((singledoc) => {
@@ -22,6 +21,7 @@ export const gotMessages = (id) => dispatch => {
 export default function (state = messagesInitial, action) {
   switch (action.type) {
     case GET_MESSAGE:
+      console.log('action.messages', action.messages)
       return action.messages
     default:
       return state
