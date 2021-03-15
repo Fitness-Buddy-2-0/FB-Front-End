@@ -1,11 +1,13 @@
 import React from 'react';
-import { View, Text, TextInput, TouchableOpacity } from 'react-native'
+import {Dimensions, ScrollView, View, Text, TextInput, TouchableOpacity } from 'react-native'
 import { connect } from 'react-redux'
 import { db } from '../FirebaseSvc'
 import styles from './styles';
 import Firebase from '../FirebaseSvc'
 import firebase from 'firebase'
 import { gotMessages } from '../store/message'
+const { height } = Dimensions.get("window");
+
 
 class Chat extends React.Component {
 
@@ -17,10 +19,12 @@ class Chat extends React.Component {
       uid: '',
       otherUser_uid: '',
       roomId: '',
-      value: ''
+      value: '',
+      screenHeight: 0,
     }
     this.onSendPress = this.onSendPress.bind(this)
     this.createOrFindRoom = this.createOrFindRoom.bind(this)
+    this.onContentSizeChange=this.onContentSizeChange.bind(this)
   }
   static navigationOptions = ({ navigation }) => ({
     title: (navigation.state.params || {}).name || 'Chat!',
@@ -90,6 +94,9 @@ class Chat extends React.Component {
   componentWillUnmount() {
   }
 
+  onContentSizeChange = (contentWidth, contentHeight) => {
+    this.setState({ screenHeight: contentHeight });
+  };
   onSendPress() {
     db.collection('messages')
       .add({
@@ -104,7 +111,15 @@ class Chat extends React.Component {
   render() {
     console.log('chat state here: ', this.state)
     console.log('what are the messages, ', this.props)
+
+    const scrollEnabled = this.state.screenHeight > height;
     return (
+      <ScrollView
+      style={{ flex: 1 }}
+      contentContainerStyle={styles.scrollview}
+      scrollEnabled={scrollEnabled}
+      onContentSizeChange={this.onContentSizeChange}
+    >
       <View>
         {this.props.messages.map((chat, index) => {
           return (
@@ -120,6 +135,7 @@ class Chat extends React.Component {
           </View>
         </TouchableOpacity>
       </View>
+      </ScrollView>
     );
   }
 
@@ -127,7 +143,7 @@ class Chat extends React.Component {
 
 const mapState = state => {
   return {
-    messages: state.messages,
+    messages: state.message,
     users: state.users,
   }
 }

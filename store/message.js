@@ -2,7 +2,9 @@ import { db } from '../FirebaseSvc'
 const GET_MESSAGE = 'GET_MESSAGE'
 const messagesInitial = []
 
-const getMessage = (messages) => ({ type: GET_MESSAGE, messages })
+const getMessage = (messages) => {
+  return { type: GET_MESSAGE, messages }
+}
 
 // retrive message from firebase DB to store in redux store.
 export const gotMessages = (id) => dispatch => {
@@ -12,7 +14,7 @@ export const gotMessages = (id) => dispatch => {
       snapshot.forEach((singledoc) => {
         message.push(singledoc.data())
       })
-      getMessage(message)
+      dispatch(getMessage(message))
     })
   } catch (err) {
     console.error('Error getting messages', err)
@@ -21,7 +23,6 @@ export const gotMessages = (id) => dispatch => {
 export default function (state = messagesInitial, action) {
   switch (action.type) {
     case GET_MESSAGE:
-      console.log('action.messages', action.messages)
       return action.messages
     default:
       return state
