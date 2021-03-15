@@ -4,7 +4,7 @@ import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view
 import Firebase from '../FirebaseSvc'
 import { connect } from 'react-redux';
 import styles from './styles';
-import {db} from '../FirebaseSvc'
+import { db } from '../FirebaseSvc'
 // import auth from '@react-native-firebase/auth';
 
 
@@ -20,21 +20,24 @@ function SignUp(props) {
   };
 
   const onRegisterPress = async () => {
-    try{
+    try {
       Keyboard.dismiss();
       const request = await Firebase.auth().createUserWithEmailAndPassword(email, password)
       if (request.user.uid) {
         const user = {
           uid: request.user.uid,
           email: email,
-          userName: userName
+          userName: userName,
+          lat: 0,
+          lng: 0,
+          geohash: ''
         }
         db.collection('users')
           .doc(request.user.uid)
           .set(user)
-      props.navigation.navigate('LogIn');
-        }
-    }catch(error){
+        props.navigation.navigate('LogIn');
+      }
+    } catch (error) {
       Alert.alert('Sorry, there was a problem creating an account. Please try again!');
     }
   }

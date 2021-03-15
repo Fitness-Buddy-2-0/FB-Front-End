@@ -1,6 +1,5 @@
 import React from 'react';
 import { View, Text, TextInput, TouchableOpacity } from 'react-native'
-import { GiftedChat } from 'react-native-gifted-chat'; // 0.3.0
 import { connect } from 'react-redux'
 import { db } from '../FirebaseSvc'
 import styles from './styles';
@@ -30,7 +29,7 @@ class Chat extends React.Component {
   state = {
     messages: [],
   };
-  createOrFindRoom() {
+  createOrFindRoom(p1, p2) {
     //create or fetch room data from firestore
     let roomRef = db.collection("room").doc(p1 + p2)
     roomRef.get().then((doc) => {
@@ -68,9 +67,7 @@ class Chat extends React.Component {
       p1 = otherInChat
       p2 = userUid
     }
-
-
-
+    this.createOrFindRoom(p1, p2)
     docRef.get().then((doc) => {
       if (doc.exists) {
         this.setState({
@@ -91,7 +88,6 @@ class Chat extends React.Component {
   }
 
   componentWillUnmount() {
-    ref.off("messages", listener)
   }
 
   onSendPress() {
@@ -107,6 +103,7 @@ class Chat extends React.Component {
 
   render() {
     console.log('chat state here: ', this.state)
+    console.log('what are the messages, ', this.props.messages)
     return (
       <View>
         {this.props.messages.map((chat, index) => {

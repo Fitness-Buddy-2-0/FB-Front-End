@@ -1,5 +1,5 @@
+import { db } from '../FirebaseSvc'
 const GET_MESSAGE = 'GET_MESSAGE'
-
 const messagesInitial = []
 
 const getMessage = (messages) => ({ type: GET_MESSAGE, messages })
@@ -16,7 +16,7 @@ export const gotMessages = (id) => dispatch => {
       getMessage(message)
     })
   } catch (err) {
-    console.err('Error getting messages', error)
+    console.error('Error getting messages', err)
   }
 }
 export default function (state = messagesInitial, action) {
