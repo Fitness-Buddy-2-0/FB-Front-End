@@ -2,11 +2,9 @@ import 'react-native-gesture-handler';
 import * as React from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
-// import { StackNavigator, TabNavigator } from "react-navigation";
 import HomeScreen from './homePage'
 import Coord from './coord'
 import LogIn from './logIn'
-import LogOut from './logOut'
 import SignUp from './signUp'
 import Chat from './chat'
 import WelcomePage from './welcome'
@@ -31,10 +29,6 @@ export default function Home() {
         <Stack.Screen
           name="SignUp"
           component={SignUp}
-        />
-        <Stack.Screen
-          name="LogOut"
-          component={LogOut}
         />
         <Stack.Screen
           name="Welcome"

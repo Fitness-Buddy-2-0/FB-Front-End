@@ -47,10 +47,9 @@ class CoordDC extends Component {
             latitude: position.coords.latitude,
             longitude: position.coords.longitude,
           })
+          console.log('lat position: ', position.coords.latitude, 'long position: ', position.coords.longitude,)
         },
-        error => Alert.alert(error.message),
-        { enableHighAccuracy: true, timeout: 20000, maximumAge: 1000 }
-      );
+        error => Alert.alert(error.message)      );
       let coord = { lat: this.state.latitude, lng: this.state.longitude }
       console.log('printing coordinates,', coord)
       this.props.storeGeoHash(coord)

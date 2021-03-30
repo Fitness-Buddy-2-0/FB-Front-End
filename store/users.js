@@ -2,7 +2,7 @@ import { db } from '../FirebaseSvc'
 import Firebase from '../FirebaseSvc'
 const geofire = require('geofire-common');
 const GOT_USERS = 'GOT_USERS'
-const radiusInM = 500;
+const radiusInM = 2000;
 export const remove = () => ({ type: REMOVE_USERS })
 
 export const gotUsers = users => ({ type: GOT_USERS, users })
