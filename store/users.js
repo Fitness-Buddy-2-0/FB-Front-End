@@ -83,9 +83,21 @@ export const nearbyUsers = (coord) => async dispatch => {
       matchingDocs.forEach((doc) => {
         console.log(doc.id, '=>', doc.data())
         result.push(doc.data())
-        console.log('result', result)
+        console.log('in users.js, printing result element', doc.data())
       })
-      console.log('about to dispatch result', result)
+      let new_result = []
+      for (let i = 0; i < result.length; i++) {
+        let curUser = result[i]
+        let ref = firebase.database().ref();
+
+        // ref.orderByChild("online").equalTo("online").on("child_added",
+        //   function (snapshot) {
+        //     console.log(snapshot.uid, snapshot.status)
+        //   })
+        const oneRef = ref.child('status').child(curUser.uid)
+
+        console.log('oneRef', oneRef)
+      }
       dispatch(gotUsers(result))
     })
 
