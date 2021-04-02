@@ -83,17 +83,20 @@ export const nearbyUsers = (coord) => async dispatch => {
     }).then((matchingDocs) => {
       matchingDocs.forEach((doc) => {
         console.log(doc.id, '=>', doc.data())
+
         result.push(doc.data())
       })
-      let new_result = []
-      for (let i = 0; i < result.length; i++) {
-        let curUser = result[i]
-        let ref = firebase.database().ref();
 
-        const oneRef = ref.child("status").child("zZR3imgMp2Pw5a1V4Z7Ysu4SKyY2").once('child_changed').then((snapshot) => { console.log('snapshot', snapshot.value) })
-        console.log('oneref', oneRef)
-      }
-      dispatch(gotUsers(result))
+      firebase.database().ref("status").on("value", snapshot=>{
+
+        const realtimeData = snapshot.val()
+        console.log('snapshot val', snapshot.val())
+        result=result.map(person=> {
+          person.state = realtimeData[person.uid].state
+          return person
+        })
+        dispatch(gotUsers(result))
+      })
     })
 
     // // getting all users
