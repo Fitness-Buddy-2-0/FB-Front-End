@@ -1,5 +1,5 @@
 import React from 'react';
-import {Dimensions, ScrollView, View, Text, TextInput, TouchableOpacity } from 'react-native'
+import { Dimensions, ScrollView, View, Text, TextInput, TouchableOpacity } from 'react-native'
 import { connect } from 'react-redux'
 import { db } from '../FirebaseSvc'
 import styles from './styles';
@@ -24,7 +24,7 @@ class Chat extends React.Component {
     }
     this.onSendPress = this.onSendPress.bind(this)
     this.createOrFindRoom = this.createOrFindRoom.bind(this)
-    this.onContentSizeChange=this.onContentSizeChange.bind(this)
+    this.onContentSizeChange = this.onContentSizeChange.bind(this)
   }
   static navigationOptions = ({ navigation }) => ({
     title: (navigation.state.params || {}).name || 'Chat!',
@@ -37,14 +37,10 @@ class Chat extends React.Component {
     //create or fetch room data from firestore
     let roomRef = db.collection("room").doc(p1 + p2)
     roomRef.get().then((doc) => {
-      console.log('doc: ', doc)
       if (doc.exists) {
-        console.log('exists!', doc.data())
         this.setState({ roomId: doc.data().roomId })
-
       }
       else {
-        console.log('here')
         const room = {
           roomId: p1 + p2,
           p1: p1,
@@ -109,32 +105,29 @@ class Chat extends React.Component {
   }
 
   render() {
-    console.log('chat state here: ', this.state)
-    console.log('what are the messages, ', this.props)
-
     const scrollEnabled = this.state.screenHeight > height;
     return (
       <ScrollView
-      style={{ flex: 1 }}
-      contentContainerStyle={styles.scrollview}
-      scrollEnabled={scrollEnabled}
-      onContentSizeChange={this.onContentSizeChange}
-    >
-      <View>
-        {this.props.messages.map((chat, index) => {
-          return (
-            <View key={index} style={chat.sender == this.state.uid ? styles.messagessender : styles.messagesreceiver}>
-              <Text style={chat.sender == this.state.uid ? styles.messageS : styles.messageR}> {chat.message}</Text>
+        style={{ flex: 1 }}
+        contentContainerStyle={styles.scrollview}
+        scrollEnabled={scrollEnabled}
+        onContentSizeChange={this.onContentSizeChange}
+      >
+        <View>
+          {this.props.messages.map((chat, index) => {
+            return (
+              <View key={index} style={chat.sender == this.state.uid ? styles.messagessender : styles.messagesreceiver}>
+                <Text style={chat.sender == this.state.uid ? styles.messageS : styles.messageR}> {chat.message}</Text>
+              </View>
+            )
+          })}
+          <TextInput style={styles.input} onChangeText={(text) => this.setState({ value: text })} value={this.state.value} />
+          <TouchableOpacity style={styles.button} onPress={() => this.onSendPress()} >
+            <View>
+              <Text >Send</Text>
             </View>
-          )
-        })}
-        <TextInput style={styles.input} onChangeText={(text) => this.setState({ value: text })} value={this.state.value} />
-        <TouchableOpacity style={styles.button} onPress={() => this.onSendPress()} >
-          <View>
-            <Text >Send</Text>
-          </View>
-        </TouchableOpacity>
-      </View>
+          </TouchableOpacity>
+        </View>
       </ScrollView>
     );
   }

@@ -8,24 +8,6 @@ export const remove = () => ({ type: REMOVE_USERS })
 
 export const gotUsers = users => ({ type: GOT_USERS, users })
 
-//coord: {location: {
-//     type: "Point",
-//     coordinates: [
-//         logitude,
-//         latitude,
-//     ]
-// }}
-
-// export const usersNearBy = (id, coord) => async dispatch => {
-//   try {
-//     const res = await axios.put(`https://fitness-buddy-backend.herokuapp.com/api/users/${id}/location`, coord)
-//     dispatch(gotUser(res.data))
-//     const { data } = await axios.get(`https://fitness-buddy-backend.herokuapp.com/api/users/${id}/nearby`)
-//     dispatch(gotUsers(data))
-//   } catch (err) {
-//     console.log(err.message)
-//   }
-// }
 export const storeGeoHash = (coord) => async dispatch => {
   try {
     // store user geohash
@@ -43,15 +25,16 @@ export const storeGeoHash = (coord) => async dispatch => {
     console.log('store geohash err', err)
   }
 }
-//      let coord = { lat: this.state.latitude, lng: this.state.longitude }
 export const nearbyUsers = (coord) => async dispatch => {
   try {
+    console.log('calling nearbyUser')
     // Each item in 'bounds' represents a startAt/endAt pair. We have to issue
     // a separate query for each pair. There can be up to 9 pairs of bounds
     // depending on overlap, but in most cases there are 4.
     let result = []
     const center = [coord.lat, coord.lng]
     const bounds = geofire.geohashQueryBounds(center, radiusInM);
+    const idxToDistance = {}
     const promises = [];
     for (const b of bounds) {
       const q = db.collection('users')
@@ -69,45 +52,39 @@ export const nearbyUsers = (coord) => async dispatch => {
         for (const doc of snap.docs) {
           const lat = doc.get('lat');
           const lng = doc.get('lng');
-
-          // We have to filter out a few false positives due to GeoHash
-          // accuracy, but most will match
           const distanceInKm = geofire.distanceBetween([lat, lng], center);
           const distanceInM = distanceInKm * 1000;
           if (distanceInM <= radiusInM) {
-            matchingDocs.push(doc);
+            matchingDocs.push(doc.data());
+            matchingDocs[matchingDocs.length - 1].distance = Math.round(distanceInM)
           }
         }
       }
       return matchingDocs;
     }).then((matchingDocs) => {
-      matchingDocs.forEach((doc) => {
-        console.log(doc.id, '=>', doc.data())
 
-        result.push(doc.data())
-      })
-
-      firebase.database().ref("status").on("value", snapshot=>{
-
+      firebase.database().ref("status").on("value", snapshot => {
         const realtimeData = snapshot.val()
-        console.log('snapshot val', snapshot.val())
-        result=result.map(person=> {
+        matchingDocs = matchingDocs.map(person => {
           person.state = realtimeData[person.uid].state
+          person.last_changed = realtimeData[person.uid].last_changed
+          return person
+        }).filter((person) => !(person.state == 'offline' && (person.last_changed < Date.now() - 7 * 24 * 60 * 60 * 1000))).map((person) => {
+          if ((Date.now() - person.last_changed) / 1000 / 60 / 60 < 1) {
+            person.lastOnline = Math.round((Date.now() - person.last_changed) / 1000 / 60)
+            person.unit = 'm'
+          } else if ((Date.now() - person.last_changed) / 1000 / 60 / 60 / 24 < 1) {
+            person.lastOnline = Math.round((Date.now() - person.last_changed) / 1000 / 60 / 60)
+            person.unit = 'h'
+          } else {
+            person.lastOnline = Math.floor((Date.now() - person.last_changed) / 1000 / 60 / 60 / 24)
+            person.unit = 'd'
+          }
           return person
         })
-        dispatch(gotUsers(result))
+        dispatch(gotUsers(matchingDocs))
       })
     })
-
-    // // getting all users
-    // const usersRef = db.collection('users')
-    // const snapshot = await usersRef.get()
-    // snapshot.forEach(doc => {
-    //   console.log(doc.id, '=>', doc.data());
-    //   result.push(doc.data())
-    // })
-    // dispatch(gotUsers(result))
-
   } catch (err) {
     console.log('Error getting documents', err);
   }

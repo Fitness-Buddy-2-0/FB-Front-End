@@ -18,71 +18,39 @@ class CoordDC extends Component {
     super(props);
     const storeState = store.getState();
     this.state = {
-      latitude: null,
-      longitude: null,
       store: storeState,
     };
     this._isMounted = false;
-    this.findCoordinates = this.findCoordinates.bind(this);
     this.updateLocation = this.updateLocation.bind(this);
+    this.intervalID = 0
   }
   async componentDidMount() {
-    await this.findCoordinates();
+    await this.updateLocation();
     this._isMounted = true;
-    setInterval(() => {
-      navigator.geolocation.getCurrentPosition(async (position) => {
-        this.props.updateLocthunk({
-          latitude: position.coords.latitude,
-          longitude: position.coords.longitude,
-        });
-      });
-    }, 10000);
+    this.intervalID = setInterval(async () => { await this.updateLocation() }, 10000);
+
   }
 
   componentWillUnmount() {
     this._isMounted = false;
-  }
-  async findCoordinates() {
-    navigator.geolocation.getCurrentPosition(
-      async (position) => {
-        await this.setState({
-          latitude: position.coords.latitude,
-          longitude: position.coords.longitude,
-        });
-      },
-      (error) => Alert.alert(error.message),
-      { enableHighAccuracy: true, timeout: 20000, maximumAge: 1000 }
-    );
+    clearInterval(this.intervalID)
   }
   async updateLocation() {
     try {
       await navigator.geolocation.getCurrentPosition(
-        (position) => {
-          this.setState({
-            latitude: position.coords.latitude,
-            longitude: position.coords.longitude,
-          });
-          console.log(
-            "lat position: ",
-            position.coords.latitude,
-            "long position: ",
-            position.coords.longitude
-          );
+        async (position) => {
+          let coord = { lat: position.coords.latitude, lng: position.coords.longitude };
+          this.props.storeGeoHash(coord);
+          this.props.updateLocthunk(coord);
         },
         (error) => Alert.alert(error.message)
       );
-      let coord = { lat: this.state.latitude, lng: this.state.longitude };
-      console.log("printing coordinates,", coord);
-      this.props.storeGeoHash(coord);
-      this.props.updateLocthunk(coord);
     } catch (err) {
       console.log(err);
     }
   }
   render() {
     const users = this.props.users || [];
-    // console.log('mapstate users', this.props.users)
-    console.log("in coord, render, printing users", users);
     return (
       <View style={page.container}>
         <TouchableOpacity style={page.refresh} onPress={this.updateLocation}>
@@ -98,7 +66,17 @@ class CoordDC extends Component {
               return (
                 <View key={user.uid} style={page.nearby}>
                   <Text style={page.person}>{user.userName}</Text>
+                  <Text>Distance: {user.distance}m</Text>
                   <Text>{user.state}</Text>
+                  {
+                    user.unit === 'm' ?
+                      <Text>Last active: {user.lastOnline}m ago</Text>
+                      : (
+                        user.unit == 'h' ?
+                          <Text>Last active: {user.lastOnline}h ago</Text>
+                          : <Text>Last active: {user.lastOnline}d ago</Text>
+                      )
+                  }
                   <TouchableOpacity
                     style={page.button}
                     onPress={() => {
