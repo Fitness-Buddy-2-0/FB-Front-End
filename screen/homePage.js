@@ -38,7 +38,7 @@ export default function HomeScreen({ navigation }) {
       <ImageBackground source={image} style={page.image} >
       <Text style= {styles.headline}>Welcome to Fitness Buddy!</Text>
 
-      <TouchableOpacity style={page.button} onPress={() => navigation.navigate('LogIn')} >
+      <TouchableOpacity style={page.button} onPress={() => navigation.replace('LogIn')} >
           <View>
             <Text style = {styles.buttonTitle} >Log In</Text>
           </View>
@@ -47,7 +47,7 @@ export default function HomeScreen({ navigation }) {
 
 
 
-      <TouchableOpacity style={page.button} onPress={() => navigation.navigate('SignUp')} >
+      <TouchableOpacity style={page.button} onPress={() => navigation.replace('SignUp')} >
           <View>
             <Text  style = {styles.buttonTitle} >Sign Up</Text>
           </View>

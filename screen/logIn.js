@@ -24,7 +24,7 @@ function LoginScreen(props) {
       .then(async () => {
         // console.log('email', email)
         // await props.gotUser();
-        props.navigation.navigate('Welcome')
+        props.navigation.replace('Welcome')
       })
 
       .catch((error) => {

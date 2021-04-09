@@ -99,7 +99,7 @@ function WelcomePage(props) {
             .then(() => {
               userStatusDatabaseRef.set(isOfflineForDatabase)
               userStatusFirestoreRef.set(isOfflineForFirestore)
-              props.navigation.navigate("Home")
+              props.navigation.replace("Home")
             });
         }
       },
