@@ -126,7 +126,7 @@ class Chat extends React.Component {
               </View>
             )
           })}
-          <TextInput style={styles.input} onChangeText={(text) => this.setState({ value: text })} value={this.state.value} />
+          <TextInput style={styles.input} onChangeText={(text) => this.setState({ value: text })} value={this.state.value} returnKeyType="send" />
 
           {/* <TouchableOpacity style={styles.button} onPress={() => this.onSendPress()} >
             <View>
