@@ -24,7 +24,6 @@ class Chat extends React.Component {
     this.onSendPress = this.onSendPress.bind(this)
     this.createOrFindRoom = this.createOrFindRoom.bind(this)
     this.onContentSizeChange = this.onContentSizeChange.bind(this)
-    // this.handleKeyDown = this.handleKeyDown.bind(this)
     this.scrollViewRef = React.createRef();
   }
   static navigationOptions = ({ navigation }) => ({
@@ -88,10 +87,9 @@ class Chat extends React.Component {
     this.props.gotMessages(p1 + p2)
   }
 
-  componentWillUnmount() {
-  }
 
   onContentSizeChange = (contentWidth, contentHeight) => {
+    this.scrollViewRef.current.scrollToEnd({ animated: true })
     this.setState({ screenHeight: contentHeight });
   };
   onSendPress() {
@@ -113,11 +111,11 @@ class Chat extends React.Component {
       <KeyboardAvoidingView  style={{ flex: 1, flexDirection: 'column',justifyContent: 'center',}} behavior="padding" enabled  keyboardVerticalOffset={100}>
       <ScrollView
         ref={this.scrollViewRef}
-        onContentSizeChange={() => this.scrollViewRef.current.scrollToEnd({ animated: true })}
+        // onContentSizeChange={() => this.scrollViewRef.current.scrollToEnd({ animated: true })}
         style={{ flex: 1 }}
         contentContainerStyle={styles.scrollview}
         scrollEnabled={scrollEnabled}
-        // onContentSizeChange={this.onContentSizeChange}
+        onContentSizeChange={this.onContentSizeChange}
         onSubmitEditing={this.onSendPress}
       >
         <View>
