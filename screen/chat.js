@@ -1,5 +1,5 @@
-import React from 'react';
-import { Dimensions, ScrollView, View, Text, TextInput, TouchableOpacity, keyboardVerticalOffset, KeyboardAvoidingView } from 'react-native'
+import React,  {useRef}  from 'react';
+import { Dimensions, ScrollView, View, Text, TextInput, KeyboardAvoidingView, keyboardVerticalOffset } from 'react-native'
 import { connect } from 'react-redux'
 import { db } from '../FirebaseSvc'
 import styles from './styles';
@@ -7,8 +7,6 @@ import Firebase from '../FirebaseSvc'
 import firebase from 'firebase'
 import { gotMessages } from '../store/message'
 const { height } = Dimensions.get("window");
-
-import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scrollview';
 
 class Chat extends React.Component {
 
@@ -27,6 +25,7 @@ class Chat extends React.Component {
     this.createOrFindRoom = this.createOrFindRoom.bind(this)
     this.onContentSizeChange = this.onContentSizeChange.bind(this)
     // this.handleKeyDown = this.handleKeyDown.bind(this)
+    this.scrollViewRef = React.createRef();
   }
   static navigationOptions = ({ navigation }) => ({
     title: (navigation.state.params || {}).name || 'Chat!',
@@ -111,12 +110,14 @@ class Chat extends React.Component {
   render() {
     const scrollEnabled = this.state.screenHeight > height;
     return (
-      <KeyboardAvoidingView  style={{ flex: 1, flexDirection: 'column',justifyContent: 'center',}} behavior="padding" enabled   keyboardVerticalOffset={100}>
+      <KeyboardAvoidingView  style={{ flex: 1, flexDirection: 'column',justifyContent: 'center',}} behavior="padding" enabled  keyboardVerticalOffset={100}>
       <ScrollView
+        ref={this.scrollViewRef}
+        onContentSizeChange={() => this.scrollViewRef.current.scrollToEnd({ animated: true })}
         style={{ flex: 1 }}
         contentContainerStyle={styles.scrollview}
         scrollEnabled={scrollEnabled}
-        onContentSizeChange={this.onContentSizeChange}
+        // onContentSizeChange={this.onContentSizeChange}
         onSubmitEditing={this.onSendPress}
       >
         <View>
