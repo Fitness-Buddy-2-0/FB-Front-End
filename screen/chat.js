@@ -1,5 +1,5 @@
 import React from 'react';
-import { Dimensions, ScrollView, View, Text, TextInput, TouchableOpacity } from 'react-native'
+import { Dimensions, ScrollView, View, Text, TextInput, TouchableOpacity, keyboardVerticalOffset, KeyboardAvoidingView } from 'react-native'
 import { connect } from 'react-redux'
 import { db } from '../FirebaseSvc'
 import styles from './styles';
@@ -8,6 +8,7 @@ import firebase from 'firebase'
 import { gotMessages } from '../store/message'
 const { height } = Dimensions.get("window");
 
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scrollview';
 
 class Chat extends React.Component {
 
@@ -25,6 +26,7 @@ class Chat extends React.Component {
     this.onSendPress = this.onSendPress.bind(this)
     this.createOrFindRoom = this.createOrFindRoom.bind(this)
     this.onContentSizeChange = this.onContentSizeChange.bind(this)
+    // this.handleKeyDown = this.handleKeyDown.bind(this)
   }
   static navigationOptions = ({ navigation }) => ({
     title: (navigation.state.params || {}).name || 'Chat!',
@@ -94,24 +96,27 @@ class Chat extends React.Component {
     this.setState({ screenHeight: contentHeight });
   };
   onSendPress() {
-    db.collection('messages')
-      .add({
-        roomId: this.state.roomId,
-        sender: this.state.uid,
-        message: this.state.value,
-        timestamp: firebase.firestore.Timestamp.fromMillis(Date.now())
-      })
-    this.setState({ value: '' })
+    if (this.state.value !== '') {
+      db.collection('messages')
+        .add({
+          roomId: this.state.roomId,
+          sender: this.state.uid,
+          message: this.state.value,
+          timestamp: firebase.firestore.Timestamp.fromMillis(Date.now())
+        })
+      this.setState({ value: '' })
+    }
   }
 
   render() {
     const scrollEnabled = this.state.screenHeight > height;
     return (
-      <ScrollView
-        style={{ flex: 1 }}
+      <KeyboardAwareScrollView
+        style={styles.container}
         contentContainerStyle={styles.scrollview}
         scrollEnabled={scrollEnabled}
         onContentSizeChange={this.onContentSizeChange}
+        onSubmitEditing={this.onSendPress}
       >
         <View>
           {this.props.messages.map((chat, index) => {
@@ -122,13 +127,14 @@ class Chat extends React.Component {
             )
           })}
           <TextInput style={styles.input} onChangeText={(text) => this.setState({ value: text })} value={this.state.value} />
+
           <TouchableOpacity style={styles.button} onPress={() => this.onSendPress()} >
             <View>
               <Text >Send</Text>
             </View>
           </TouchableOpacity>
         </View>
-      </ScrollView>
+      </KeyboardAwareScrollView>
     );
   }
 
