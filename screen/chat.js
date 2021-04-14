@@ -111,8 +111,9 @@ class Chat extends React.Component {
   render() {
     const scrollEnabled = this.state.screenHeight > height;
     return (
-      <KeyboardAwareScrollView
-        style={styles.container}
+      <KeyboardAvoidingView  style={{ flex: 1, flexDirection: 'column',justifyContent: 'center',}} behavior="padding" enabled   keyboardVerticalOffset={100}>
+      <ScrollView
+        style={{ flex: 1 }}
         contentContainerStyle={styles.scrollview}
         scrollEnabled={scrollEnabled}
         onContentSizeChange={this.onContentSizeChange}
@@ -128,13 +129,14 @@ class Chat extends React.Component {
           })}
           <TextInput style={styles.input} onChangeText={(text) => this.setState({ value: text })} value={this.state.value} />
 
-          <TouchableOpacity style={styles.button} onPress={() => this.onSendPress()} >
+          {/* <TouchableOpacity style={styles.button} onPress={() => this.onSendPress()} >
             <View>
               <Text >Send</Text>
             </View>
-          </TouchableOpacity>
+          </TouchableOpacity> */}
         </View>
-      </KeyboardAwareScrollView>
+      </ScrollView>
+      </KeyboardAvoidingView>
     );
   }
 
